@@ -38,12 +38,12 @@ import cyclist.model.vo.SimulationDataStream;
 public class SimulationProxy extends Proxy implements SimulationDataStream {
 	
 	public static final String ALL_AGENTS_QUERY = 
-			 "select ID, AgentType, ModelType, Prototype, EnterDate, LeaveDate "
-			+"  from Agents ";
+			 "SELECT ID, AgentType, ModelType, Prototype, EnterDate, DeathDate "
+			+"  FROM Agents As A JOIN AgentDeaths AS D ON A.ID=D.AgentID";
 	
 	 public static final String AGENT_QUERY = 
-			 "select  AgentType, ModelType, Prototype, EnterDate, LeaveDate  "
-			+"  from Agents "
+			 "SELECT ID, AgentType, ModelType, Prototype, EnterDate, DeathDate "
+			+"  FROM Agents As A JOIN AgentDeaths AS D ON A.ID=D.AgentID"
 			+"  where AgentType = ?";
 	
 	 public static final String ALL_FACILITIES_QUERY = 
@@ -129,7 +129,7 @@ public class SimulationProxy extends Proxy implements SimulationDataStream {
 						String model = rs.getString("ModelType");
 						String prototype = rs.getString("Prototype");
 						int from = rs.getInt("EnterDate");
-						int to = rs.getInt("LeaveDate");
+						int to = rs.getInt("DeathDate");
 						
 						list.add(new Agent(id, "no name", type, model, prototype, from, to));
 					}
@@ -320,8 +320,8 @@ public class SimulationProxy extends Proxy implements SimulationDataStream {
 			+"  );";
 	
 	public static final String FILL_FACILITY_TABLE = 
-			 " insert into Facility (id, name, model, prototype, institute, region, start, end) "
-			+"     select a.id as id, 'none' as name, a.ModelType as model, a.Prototype as prototype, a.parentid as institute, b.parentid as region, a.enterdate as start, a.leavedate as end"
+			 " insert into Facility (id, name, model, prototype, institute, region, start) "
+			+"     select a.id as id, 'none' as name, a.ModelType as model, a.Prototype as prototype, a.parentid as institute, b.parentid as region, a.enterdate as start"
 			+"     from agents as a, agents as b "
 			+"     where a.AgentType = 'Facility'" 
 			+"       and a.parentid = b.id ";
